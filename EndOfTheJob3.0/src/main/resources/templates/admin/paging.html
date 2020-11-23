@@ -1,0 +1,127 @@
+<!DOCTYPE html >
+<html  xmlns:th="http://www.thymeleaf.org">
+ <body>
+   <div th:fragment="pageNav(dataList,prefix)">
+   	<!-- 分页组件 -->
+   	<!--页面数量小于等于7情况 -->
+<ul class="pagination"  th:if="${dataList.totalPages} le 7 and  ${dataList.totalPages} ge 1">
+	<!-- 上一页 -->
+	<li class="page-item"
+		data-th-classappend="${dataList.first} ? 'disabled' : ''">
+		<a
+		th:href="@{'/'+${prefix}+'/'+${dataList.number-1}}"  
+		class="page-link" aria-label="Previous"> <span aria-hidden="true">«</span>
+	</a>
+	</li>
+
+	<!-- 迭代生成页码 -->
+	<li class="page-item"
+		data-th-each="i : ${#numbers.sequence(1, dataList.totalPages)}"
+		data-th-classappend="${(dataList.number + 1) eq i} ? 'active' : ''">
+		<a class="page-link" 
+		th:href="@{'/'+${prefix}+'/'+${i- 1} }"  > <span
+			data-th-text="${i}"></span>
+	</a>
+	</li>
+
+	<!-- 下一页 -->
+	<li class="page-item"
+		data-th-classappend="${dataList.last} ? 'disabled' : ''">
+		<a	th:href="@{'/'+${prefix}+'/'+${dataList.number+ 1} }"   
+		class="page-link" 
+		aria-label="Next"> <span aria-hidden="true">»</span>
+	</a></li>
+	
+</ul>
+
+
+<!-- 处理页数大于7 的情况 -->
+<ul class="pagination" data-th-if="${dataList.totalPages gt 7}">
+	<!-- 上一页 -->
+	<li class="page-item"
+		data-th-classappend="${dataList.first} ? 'disabled' : ''"><a
+		th:href="@{'/'+${prefix}+'/'+${dataList.number- 1} }" 
+		class="page-link" 
+		aria-label="Previous"> <span aria-hidden="true">«</span>
+	</a></li>
+
+	<!-- 首页 -->
+	<li class="page-item"
+		data-th-classappend="${(dataList.number + 1) eq 1} ? 'active' : ''">
+		<a th:href="@{'/'+${prefix}+'/'+0}"    class="page-link"
+		>1</a>
+	</li>
+
+
+	<!-- 当前页面小于等于4 -->
+	  <li class="page-item" data-th-if="${(dataList.number + 1) le 4}" data-th-each="i : ${#numbers.sequence(2,5)}" 
+            data-th-classappend="${(dataList.number + 1) eq i} ? 'active' : ''" >
+            <a class="page-link" th:href="@{'/'+${prefix}+'/'+${i - 1}}"  >
+                <span data-th-text="${i}"></span>
+            </a>
+        </li>
+
+        <li class="page-item disabled" data-th-if="${(dataList.number + 1) le 4}">
+            <a href="javascript:void(0);"  class="page-link">
+                <span aria-hidden="true">...</span>
+            </a>
+        </li>  
+
+	<!-- 最后一页与当前页面之差，小于等于3 -->
+	    <li class="page-item disabled" data-th-if="${(dataList.totalPages-(dataList.number + 1)) le 3}">
+            <a href="javascript:void(0);" class="page-link">
+                <span aria-hidden="true">...</span>
+            </a>
+        </li>  
+        <li class="page-item" data-th-if="${(dataList.totalPages-(dataList.number + 1)) le 3}" data-th-each="i : ${#numbers.sequence(dataList.totalPages-4, dataList.totalPages-1)}" 
+            data-th-classappend="${(dataList.number + 1) eq i} ? 'active' : ''" >
+            <a class="page-link" th:href="@{'/'+${prefix}+'/'+${i - 1}}" >
+                <span data-th-text="${i}"></span>
+           </a>
+        </li> 
+
+	<!-- 最后一页与当前页面之差大于3，且  当前页面大于4-->
+
+	  <li class="page-item disabled" data-th-if="${((dataList.number + 1) gt 4) and ((dataList.totalPages-(dataList.number + 1)) gt 3 )}">
+            <a href="javascript:void(0);" class="page-link">
+                <span aria-hidden="true">...</span>
+            </a>
+        </li> 
+        <li class="page-item" data-th-if="${((dataList.number + 1) gt 4) and ((dataList.totalPages-(dataList.number + 1)) gt 3 )}" >
+            <a th:href="@{'/'+${prefix}+'/'+${dataList.number- 1} }"    class="page-link" ><span data-th-text="${dataList.number}"></span></a>
+        </li>
+        <li class="page-item active" data-th-if="${((dataList.number + 1) gt 4) and ((dataList.totalPages-(dataList.number + 1)) gt 3 )}">
+            <a th:href="@{'/'+${prefix}+'/'+${dataList.number}}"    class="page-link" ><span data-th-text="${dataList.number+1}"></span></a>
+        </li>
+        <li class="page-item" data-th-if="${((dataList.number + 1) gt 4) and ((dataList.totalPages-(dataList.number + 1)) gt 3 )}">
+            <a th:href="@{'/'+${prefix}+'/'+${dataList.number+ 1} }"    class="page-link" ><span data-th-text="${dataList.number+2}"></span></a>
+        </li>
+
+        <li class="page-item disabled"  data-th-if="${((dataList.number + 1) gt 4) and ((dataList.totalPages-(dataList.number + 1)) gt 3 )}">
+            <a href="javascript:void(0);" class="page-link">
+                <span aria-hidden="true">...</span>
+            </a>
+        </li> 
+
+	<!-- 最后一页 -->
+	<li class="page-item"
+		data-th-classappend="${(dataList.number + 1) eq dataList.totalPages} ? 'active' : ''">
+		<a th:href="@{'/'+${prefix}+'/'+${dataList.totalPages - 1}}"    class="page-link"
+		><span data-th-text="${dataList.totalPages}"></span></a>
+	</li>
+
+	<!-- 下一页 -->
+	<li class="page-item"
+		data-th-classappend="${dataList.last} ? 'disabled' : ''"><a
+		th:href="@{'/'+${prefix}+'/'+${dataList.number + 1}}"    class="page-link"
+		aria-label="Next">
+			<span aria-hidden="true">»</span>
+	</a></li>
+</ul>
+		
+<!--分页组件 -->
+				
+   </div>
+ </body> 
+ 
+</html>

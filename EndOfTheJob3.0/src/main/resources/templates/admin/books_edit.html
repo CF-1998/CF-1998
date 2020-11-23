@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:with="title='图书管理',active='books_list'">
+<header th:replace="admin/header::headerFragment(${title},${active})"></header>
+<head>
+<meta th:name="_csrf" th:content="${_csrf.token}" />
+
+<meta th:name="_csrf_header" th:content="${_csrf.headerName}" />
+
+</head>
+
+<style type="text/css">
+body {
+	background-color: #f7f1ed;
+}
+</style>
+<body class="fixed-left">
+	<div id="wrapper">
+		<div th:replace="admin/header::header-body"></div>
+		<div class="content-page">
+			<div class="content">
+				<div class="container">
+					<div class="row">
+						<div class="col-sm-12">
+							<h4 class="page-title">编辑图书信息</h4>
+						</div>
+
+						<div class="col-lg-12">
+							<form th:action="@{/admin/edit(id=${books.id})}" th:object="${books}"
+								method="post" class="form-horizontal" role="form">
+								<!-- 图书编号 -->
+								<div class="form-group">
+									<label class="control-label col-lg-2">图书编号：</label>
+									<div class="col-lg-8">
+										<input type="text" class="form-control" value=""
+											placeholder="图书编号" th:field="*{id}" disabled/>
+									</div>
+								</div>
+								<!-- 书名 -->
+								<div class="form-group">
+									<label class="control-label col-lg-2">书名：</label>
+									<div class="col-lg-8">
+										<input type="text" class="form-control" value=""
+											placeholder="书名" th:field="*{bookName}" />
+									</div>
+								</div>
+								<!-- 作者 -->
+								<div class="form-group">
+									<label class="control-label col-lg-2">作者：</label>
+									<div class="col-lg-8">
+										<input type="text" class="form-control" value=""
+											placeholder="作者" th:field="*{bookAuthor}" />
+									</div>
+								</div>
+								<!-- 详情简介 -->
+								<div class="form-group">
+									<label class="control-label col-lg-2">详情简介：</label>
+									<div class="col-lg-8">
+										<input type="text" class="form-control" value=""
+											placeholder="详情简介" th:field="*{bookDetails}" />
+									</div>
+								</div>
+																<div class="row">
+									<!-- 封面 -->
+								<div class="form-group col-lg-6 col-lg-push-1">
+									<label class="control-label col-lg-2">封面：</label>
+									<div class="col-lg-7">
+										<input type="text" class="form-control" value=""
+											placeholder="图书封面" th:field="*{bookCover}" id="myinput" />
+									</div>
+									<div class="col-lg-2">
+										<button type="button" class="btn btn-primary"
+											data-toggle="modal" data-target="#myModal">上传</button>
+										<!-- 模态框 -->
+										<!-- Modal -->
+										<div class="modal fade" id="myModal" tabindex="-1"
+											role="dialog" aria-labelledby="myModalLabel">
+											<div class="modal-dialog" role="document">
+												<div class="modal-content">
+													<div class="modal-header">
+														<button type="button" class="close" data-dismiss="modal"
+															aria-label="Close">
+															<span aria-hidden="true">&times;</span>
+														</button>
+														<h4 class="modal-title" id="myModalLabel">上传图片</h4>
+													</div>
+													<div class="modal-body">
+														<div class="file-loading">
+															<input id="input-ke-2" name="file" type="file" multiple>
+														</div>
+													</div>
+													<div class="modal-footer">
+														<button type="button" class="btn btn-default"
+															data-dismiss="modal">关闭</button>
+
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+									<!-- 图书类型  th:text=""-->
+									<div class="form-group col-lg-4 col-lg-push-1">
+										<label class="control-label col-lg-5">图书类型：</label>
+										<div class="col-lg-5 date">
+											<select id="mySelect"  th:field="*{kindOfBooks.id}" class="form-control">
+												<option th:each="kindOfBook:${kindOfBook}"
+													th:value="${kindOfBook.id}"
+													th:text="${kindOfBook.bookKind}"
+													></option>
+											</select>
+										</div>
+
+									</div>
+
+								</div>
+
+								<!-- 出版时间 -->
+								<div class="form-group">
+									<label class="control-label col-lg-2">出版时间：</label>
+									<div class="col-lg-8 date">
+										<input id="datetimepicker1" type="text" class="form-control"
+											value="" placeholder="图书出版时间" th:field="*{bookCreateDate}" />
+									</div>
+
+								</div>
+
+
+
+								<!-- 出版社 -->
+								<div class="form-group">
+									<label class="control-label col-lg-2">出版社：</label>
+									<div class="col-lg-8">
+										<input type="text" class="form-control" value=""
+											placeholder="出版社" th:field="*{bookPublisher}" />
+									</div>
+								</div>
+								<!-- 价格 -->
+								<div class="form-group">
+									<label class="control-label col-lg-2">价格：</label>
+									<div class="col-lg-8">
+										<input type="text" class="form-control" value=""
+											placeholder="出版社" th:field="*{bookPrice}" />
+									</div>
+								</div>
+
+								<!-- 折扣 -->
+								<div class="form-group">
+									<label class="control-label col-lg-2">折扣：</label>
+									<div class="col-lg-8">
+										<input type="text" class="form-control" value=""
+											placeholder="折扣" th:field="*{bookDiscount}" />
+									</div>
+								</div>
+
+								<!-- 标题 -->
+								<div class="form-group">
+									<label class="control-label col-lg-2">标题：</label>
+									<div class="col-lg-8">
+										<input type="text" class="form-control" value=""
+											placeholder="标题" th:field="*{bookTitle}" />
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-lg-2"></div>
+									<div class="col-lg-1">
+										<a href=""><button type="submit" class="btn btn-success ">保存</button></a>
+									</div>
+								</div>
+							</form>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$(function() {
+			$('#datetimepicker1').datetimepicker({
+				format : 'yyyy-mm--dd',
+				language : "zh-CN",
+
+				startView : "year", //初始化视图是‘年’
+				minView : "month", //最精确视图为'月'
+				maxView : "decade",//最高视图为'十年'
+				pickerPosition : "bottom-left",
+				autoclose : true
+			});
+		});
+		$('#myModal').on('shown.bs.modal', function() {
+			$('#myInput').focus()
+		});
+
+		$('#myModal1').on('shown.bs.modal', function() {
+			$('#myInput1').focus()
+		});
+		var dirPath = "e:" + File.separator + "upload" + File.separator
+				+ "images" + File.separator;
+		var token = $("meta[name='_csrf']").attr("content");
+		var header = $("meta[name='_csrf_header']").attr("content");
+		$("#input-ke-2").fileinput({
+			language : 'zh', // 多语言设置，需要引入local中相应的js，例如locales/zh.js
+			//theme: "explorer-fa",                               // 主题
+			uploadUrl : "/admin/uploadFile", // 上传地址
+			minFileCount : 1, // 最小上传数量
+			maxFileCount : 5, // 最大上传数量
+			overwriteInitial : false, // 覆盖初始预览内容和标题设置
+			showCancel : false, // 显示取消按钮
+			showZoom : false, // 显示预览按钮
+			showCaption : false, // 显示文件文本框
+			dropZoneEnabled : false, // 是否可拖拽
+			uploadLabel : "上传附件", // 上传按钮内容
+			browseLabel : '选择附件', // 浏览按钮内容
+			showRemove : false, // 显示移除按钮
+			browseClass : "layui-btn", // 浏览按钮样式
+			uploadClass : "layui-btn", // 上传按钮样式
+			uploadExtraData : {
+				'_csrf' : token,
+				'_csrf_header' : header
+			}, // 上传数据
+			hideThumbnailContent : true, // 是否隐藏文件内容
+			fileActionSettings : { // 在预览窗口中为新选择的文件缩略图设置文件操作的对象配置
+				showRemove : true, // 显示删除按钮
+				showUpload : true, // 显示上传按钮
+				showDownload : false, // 显示下载按钮
+				showZoom : false, // 显示预览按钮
+				showDrag : false, // 显示拖拽
+				removeIcon : '<i class="fa fa-trash">删除</i>', // 删除图标 
+				uploadIcon : '<i class="fa fa-upload">上传</i>', // 上传图标
+				uploadRetryIcon : '<i class="fa fa-repeat">重试</i>' // 重试图标
+			}
+		});
+
+		$("#input-ke-2").on("fileuploaded",
+				function(event, data, previewId, index) {
+					$('#myinput').val(data.response);
+				});
+		// 上传成功回调
+		$("#input-ke-2").on("filebatchuploadcomplete",
+				function(event, data, previewId, index) {
+					layer.msg("fileNamelist");
+					setTimeout("closeUpladLayer()", 2000)
+				});
+		// 上传失败回调
+		$('#input-ke-2').on('fileerror', function(event, data, msg) {
+			layer.msg(data.msg);
+			tokenTimeOut(data);
+		})
+
+		$(document).ready(function() {
+			$("#mySelect").select();
+			
+		});
+		
+	</script>
+</body>
+</html>

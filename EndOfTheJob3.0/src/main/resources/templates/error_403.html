@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+	<head>
+		<meta charset="utf-8">
+		<title>403无权限访问</title>
+		<link rel="stylesheet" type="text/css"
+	th:href="@{/css/bootstrap.min.css}" />
+<script type="text/javascript" th:src="@{/js/jquery-1.11.1.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+		<style type="text/css">
+			body{
+				background-color: #f7f1ed;
+			}
+			.wrapper-p{
+				margin-top: 200px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrapper-p">
+		    <div class="ex-page-content text-center">
+		        <h1>403!</h1>
+		        <h2>抱歉，您没有权限访问这个页面！</h2>
+		        <a class="btn btn-purple waves-effect waves-light" href="/index"><i class="fa fa-angle-left"></i> 返回首页</a>
+		    </div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="utf-8">
+<meta name="_csrf" th:content="${_csrf.token}">
+<meta name="_csrf_header" th:content="${_csrf.headerName}">
+<title>购物车</title>
+<link rel="stylesheet" type="text/css"
+	th:href="@{/css/bootstrap.min.css}" />
+<link th:href="@{/css/cart.css}" media="screen" rel="stylesheet"
+	type="text/css" />
+<script type="text/javascript" th:src="@{/js/jquery-1.11.1.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{js/etao.js}"></script>
+<script type="text/javascript" th:src="@{/js/cart.js}"></script>
+<style type="text/css">
+#myBody {
+	background-color: #f7f1ed;
+	height: 700px;
+}
+
+#myShopping {
+	margin-top: 60px;
+}
+
+h1 {
+	text-align: center;
+}
+
+table thead tr th {
+	text-align: center;
+}
+
+th {
+	text-align: center !important;
+	vertical-align: middle !important;
+}
+
+td {
+	text-align: center !important;
+	vertical-align: middle !important;
+}
+
+.table_foot {
+	text-align: right;
+	padding: 8px 50px !important;
+}
+</style>
+</head>
+<body>
+	<div id="myBody">
+		<!-- 顶部导航 -->
+		<nav class="navbar navbar-default navbar-fixed-top navbar-inverse"
+			id="myNav">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed"
+						data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+						aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span> <span
+							class="icon-bar"></span> <span class="icon-bar"></span> <span
+							class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" th:href="@{/index}">网上书城</a>
+				</div>
+
+				<div class="collapse navbar-collapse"
+					id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="#">网站综述 <span class="sr-only">(current)</span></a></li>
+						<li><a href="#">简述</a></li>
+						<li class="dropdown"><a href="#" class="dropdown-toggle"
+							data-toggle="dropdown" role="button" aria-haspopup="true"
+							aria-expanded="false">图书分类</a>
+							<ul class="dropdown-menu">
+								<li th:each="kindOfBooks:${kindOfBooks}"><a href="#"
+									th:text="${kindOfBooks.bookKind}">Action</a></li>
+
+							</ul></li>
+						<li><a href="#">客服中心</a></li>
+					</ul>
+					<form class="navbar-form navbar-left">
+						<div class="form-group">
+							<input type="text" class="form-control" placeholder="搜索藏品">
+						</div>
+						<button type="submit" class="btn btn-default">搜索</button>
+					</form>
+					<ul class="nav navbar-nav navbar-right">
+						<li><a th:href="@{/register}" style="color: gold;"><span
+								class="glyphicon glyphicon-flash">注册</span></a></li>
+						<li sec:authorize="isAnonymous()"><a th:href="@{/login}"
+							style="color: gold;"><span class="glyphicon glyphicon-user">登录</span></a></li>
+						<li sec:authorize="isAuthenticated()"><a
+							th:href="'javascript:loginout();'" style="color: gold;"><span
+								class="glyphicon glyphicon-remove" sec:authentication="name"></span>安全退出</a></li>
+						<li><a th:href="@{/goshop}" style="color: gold;"><span
+								class="glyphicon glyphicon-shopping-cart">购物车</span></a></li>
+					</ul>
+
+					<form th:action="@{/mylogout}" method="post"
+						style="display: 'none';" id="loginout"></form>
+				</div>
+			</div>
+		</nav>
+		<!-- 购物车 -->
+		<div class="container">
+			<div class="row" id="myShopping">
+				<div class="col-lg-12">
+					<h1>我的购物车</h1>
+				</div>
+			</div>
+			<div class="cart-wrap">
+				<table id="cartTable" class="cart table table-condensed">
+					<thead>
+						<tr>
+							<th class="t-checkbox col-lg-1"><label><input
+									class="check-all check" type="checkbox" />全选</label></th>
+							<th class="col-lg-1">序号</th>
+							<th class="col-lg-1">书名</th>
+							<th class="col-lg-2">作者</th>
+							<th class=" col-lg-1">销售单价</th>
+							<th class=" col-lg-2">图书数量</th>
+							<th class=" col-lg-2">金额小计</th>
+							<th class=" col-lg-1">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="cart,status:${session.cart}">
+							<td><input type="hidden" class="form-control"
+								th:value="${cart.key.id}" id="booksId" name="booksId" /></td>
+							<td class="goods"><label> <input type="checkbox"
+									class="check-one check " th:text="${status.count}" /></label></td>
+							<td th:text="${cart.key.bookName}">书名</td>
+							<td th:text="${cart.key.bookAuthor}">作者</td>
+							<td class="selling-price number small-bold-red text-right"
+								style="padding-top: 1.1rem;"
+								th:data-bind="${cart.key.bookPrice}"></td>
+							<td>
+								<div class="input-group input-group-sm">
+									<span class="input-group-addon minus">-</span> <input
+										type="text" class="number form-control input-sm"
+										th:value="${cart.value}" style="text-align: center;" /> <span
+										class="input-group-addon plus">+</span>
+								</div>
+							</td>
+							<td class="subtotal number small-bold-red text-right"
+								style="padding-top: 1.1rem;"></td>
+							<td class="action" style="padding-top: 1.1rem;"><span
+								class="delete btn btn-warning">删除</span></td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="row">
+					<div class="col-md-12 col-lg-12 col-sm-12">
+
+						<div class="cart-summary">
+							<div class="col-lg-offset-1 col-lg-2">
+								<a th:href="@{/index}"><button type="button"
+										class="btn btn-success">继续购买</button></a>
+							</div>
+							<div style="margin-left: 2rem;" class="pull-right">
+								<a id="btn_settlement" type="button" class="btn btn-primary"
+									data-toggle="modal" data-target="#myModal" disabled>提交订单</a>
+							</div>
+							<div style="margin-left: 1rem; margin-top: 0.4rem;"
+								class="pull-right total">
+								<label>金额合计:<span id="priceTotal"
+									class="price-total large-bold-red">0.00</span></label>
+							</div>
+							<div style="margin-top: 4px;" class="pull-right">
+								<label>您选择了<span id="itemCount" class="large-bold-red"
+									style="margin: 0 4px;"></span>种图书，共计<span id="qtyCount"
+									class="large-bold-red" style="margin: 0 4px;"></span>件
+								</label>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- 提交收货信息 -->
+				<!-- Modal -->
+				<div class="modal fade" id="myModal" tabindex="-1" role="dialog"
+					aria-labelledby="myModalLabel">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal"
+									aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+								<h4 class="modal-title" id="myModalLabel">填写收货信息</h4>
+							</div>
+							<!--  th:action="@{/order}"-->
+							<div class="modal-body">
+								<form method="post" id="orderForm" th:action="@{/order}"
+									onsubmit="return go()" class="form-horizontal myregisterForm"
+									role="form">
+									<div class="form-group">
+										<label for="user" class="col-sm-2 control-label">收货人</label>
+										<div class="col-sm-7">
+											<input type="text" class="form-control" value=""
+												placeholder="请输入收货人姓名" required name="username" />
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="user_email" class="col-sm-2 control-label">用户邮箱</label>
+										<div class="col-sm-7">
+											<input type="text" class="form-control" name="email" value=""
+												placeholder="请输入邮箱" required th:onblur="checkEmail()"
+												id="email">
+										</div>
+										<div class="col-sm-3" id="email_prompt" style="color: red;"></div>
+									</div>
+									<div class="form-group">
+										<label for="user_address" class="col-sm-2 control-label">收货地址</label>
+										<div class="col-sm-7">
+											<input type="text" class="form-control" id="user_address"
+												value="" placeholder="请输入收货地址" required name="address">
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="user_tel" class="col-sm-2 control-label">联系方式</label>
+										<div class="col-sm-7">
+											<input type="text" class="form-control" value=""
+												placeholder="请输入手机号" required th:onblur="checkMobile()"
+												name="tel" id="mobile">
+										</div>
+										<div class="col-lg-3" id="mobile_prompt" style="color: red;"></div>
+									</div>
+									<!-- 附带订单信息 -->
+									<input type="hidden" class="form-control"  id="shoppingKind" name="shoppingKind" /> 
+									<input type="hidden" class="form-control"  id="shoppingNum" name="shoppingNum"/> 
+									<input type="hidden" class="form-control"  id="price" name="price"/> 
+									<a href="">
+										<button type="submit" class="btn btn-primary col-sm-offset-7">提交</button>
+									</a>
+								</form>
+							</div>
+
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default"
+									data-dismiss="modal">关闭</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+	<script type="text/javascript">
+		function loginout() {
+			if (confirm("确定要退出登录吗")) {
+				document.getElementById("loginout").submit();
+			}
+		}
+		//删除某个商品mycount
+		var token = $("meta[name='_csrf']").attr("content");
+		var header = $("meta[name='_csrf_header']").attr("content");
+		var id = $("#booksId").val();
+		//var count = parseInt($("#mycount").val());
+		$(document).ajaxSend(function(e, xhr, options) {
+			xhr.setRequestHeader(header, token);
+		});
+		$('#myModal').on('shown.bs.modal', function() {
+			$('#myInput').focus()
+		})
+		//提交表单进行验证
+		function go() {
+			var form = document.getElementById("orderForm");
+			if (!checkEmail() || !checkMobile()) {
+				alert("请再检查一下信息");
+				return false;
+			}
+			alert("提交成功");
+			return true;
+		};
+		//绑定失去焦点事件
+
+		$("#email").blur(checkEmail);
+		$("#mobile").blur(checkMobile);
+		/*验证邮箱*/
+		function checkEmail() {
+			var email = $("#email").val();
+			var email_prompt = $("#email_prompt");
+			email_prompt.html("");
+			var reg = /^\w+@\w+(\.[a-zA-Z]{2,3}){1,2}$/;
+			if (reg.test(email) == false) {
+				email_prompt.html("Email格式不正确");
+				return false;
+			}
+			return true;
+		}
+		/*验证手机号码*/
+		function checkMobile() {
+			var mobile = $("#mobile").val();
+			var mobileId = $("#mobile_prompt");
+			mobileId.html("");
+			var regMobile = /^1\d{10}$/;
+			if (regMobile.test(mobile) == false) {
+				mobileId.html("手机号码不正确");
+				return false;
+			}
+			mobileId.html("");
+			return true;
+		}
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+	<head>
+		<meta charset="utf-8">
+		<meta name="_csrf" th:content="${_csrf.token}">
+		<meta name="_csrf_header" th:content="${_csrf.headerName}">
+		<title>注册页面</title>
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+		<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css" />
+		<script type="application/javascript" src="js/jquery-1.11.1.min.js"></script>
+		<script type="application/javascript" src="js/bootstrap.min.js"></script>
+		<script type="application/javascript" src="js/bootstrap-datetimepicker.min.js"></script>
+		<script type="application/javascript" src="js/locale/bootstrap-datetimepicker.zh-CN.js"></script>
+		<style type="text/css">
+			.container {
+				margin: 0 auto;
+			}
+
+			.myregisterForm {
+				padding-top: 70px;
+
+			}
+		</style>
+	</head>
+	<body>
+		<!-- 顶部导航 -->
+		<nav class="navbar navbar-default navbar-fixed-top navbar-inverse"
+			id="myNav">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed"
+						data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+						aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span> <span
+							class="icon-bar"></span> <span class="icon-bar"></span> <span
+							class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" th:href="@{/index}">网上书城</a>
+				</div>
+
+				<div class="collapse navbar-collapse"
+					id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="#">网站综述 <span class="sr-only">(current)</span></a></li>
+						<li><a href="#">简述</a></li>
+						<li class="dropdown"><a href="#" class="dropdown-toggle"
+							data-toggle="dropdown" role="button" aria-haspopup="true"
+							aria-expanded="false">图书分类</a>
+							<ul class="dropdown-menu" >
+								<li th:each="kindOfBooks:${kindOfBooks}"><a href="#" th:text="${kindOfBooks.bookKind}">Action</a></li>
+
+							</ul></li>
+						<li><a href="#">客服中心</a></li>
+					</ul>
+					<form class="navbar-form navbar-left">
+						<div class="form-group">
+							<input type="text" class="form-control" placeholder="搜索藏品">
+						</div>
+						<button type="submit" class="btn btn-default">搜索</button>
+					</form>
+					<ul class="nav navbar-nav navbar-right">
+						<li><a th:href="@{/register}" style="color: gold;"><span
+								class="glyphicon glyphicon-flash">注册</span></a></li>
+						<li sec:authorize="isAnonymous()"><a th:href="@{/login}"
+							style="color: gold;"><span class="glyphicon glyphicon-user">登录</span></a></li>
+						<li sec:authorize="isAuthenticated()"><a
+							th:href="'javascript:loginout();'" style="color: gold;"><span
+								class="glyphicon glyphicon-remove" sec:authentication="name"></span>安全退出</a></li>
+						<li><a th:href="@{/goshop}" style="color: gold;"><span
+								class="glyphicon glyphicon-shopping-cart">购物车</span></a></li>
+					</ul>
+
+					<form th:action="@{/mylogout}" method="post"
+						style="display: 'none';" id="loginout"></form>
+				</div>
+			</div>
+		</nav>
+		<!-- 注册表单 -->
+		<!-- 姓名、密码、性别、生日、邮箱、密码、住址。 -->
+		<div class="container-fluid">
+			<div class="container">
+				<form th:action="@{/addusers}" th:object="${users}" method="post" onsubmit="return go()" class="form-horizontal myregisterForm"
+				 role="form" id="myfrom">
+					<!-- 姓名（用户名） -->
+					<div class="form-group">
+						<label class="control-label col-lg-2">用户名：</label>
+						<div class="col-lg-7">
+							<input type="text" class="form-control" value="" placeholder="请输入用户名（用户名长度要在2-15可为汉字或字母数字）" th:field="*{userName}"
+							 required id="name" th:onblur="checkUser()" name="name" />
+							<input type="hidden" class="form-control" value="false" id="myHiddenInput" name="myHiddenInput" />
+						</div>
+						<div class="col-lg-3" id="nameDiv" style="color: red;"></div>
+					</div>
+					<!-- 密码 -->
+					<div class="form-group">
+						<label class="control-label col-lg-2">密码：</label>
+						<div class="col-lg-7">
+							<input type="password" class="form-control" value="" placeholder="请输入密码(只能包含4-16位数字或字母之间)" th:field="*{password}"
+							 required id="pwd" th:onblur="checkPwd()" />
+						</div>
+						<div class="col-lg-3" id="span_pwd" style="color: red;"></div>
+					</div>
+
+					<!-- 确认密码 -->
+					<div class="form-group">
+						<label class="control-label col-lg-2">确认密码：</label>
+						<div class="col-lg-7">
+							<input type="password" class="form-control" value="" placeholder="请再次输入密码" id="repwd" onblur="checkrePwd()" />
+						</div>
+						<div class="col-lg-3" id="span_repwd" style="color: red;"></div>
+					</div>
+
+
+					<!-- 性别 -->
+					<div class="form-group">
+						<label class="control-label col-lg-2">性别：</label>
+						<div class="col-lg-7">
+							<label style="margin-right: 100px;"><input type="radio" name="sex" value="男" th:field="*{sex}">男</label>
+							<label><input type="radio" name="sex" value="女" th:field="*{sex}">女</label>
+						</div>
+						<div class="col-lg-3" id="span_sex" style="color: red;"></div>
+					</div>
+					<div>
+					</div>
+
+					<!-- 生日 -->
+					<div class="form-group">
+						<label class="control-label col-lg-2">生日：</label>
+						<div class="col-lg-7 date">
+							<input id="datetimepicker1" type="text" class="form-control" value="" placeholder="生日" th:field="*{birthday}"
+							 required th:onblur="checkDate()" />
+						</div>
+						<div class="col-lg-3" id="span_date" style="color: red;"></div>
+					</div>
+					<!-- 邮箱 -->
+					<div class="form-group">
+						<label class="control-label col-lg-2">邮箱：</label>
+						<div class="col-lg-7">
+							<input id="email" type="text" class="form-control" value="" placeholder="请输入邮箱" th:field="*{email}" required
+							 th:onblur="checkEmail()" />
+
+						</div>
+						<div class="col-lg-3" id="email_prompt" style="color: red;"></div>
+					</div>
+
+					<!-- 手机号 -->
+					<div class="form-group">
+						<label class="control-label col-lg-2">手机号：</label>
+						<div class="col-lg-7">
+							<input id="mobile" type="text" class="form-control" value="" placeholder="请输入手机号" th:field="*{tel_num}" required
+							 th:onblur="checkMobile()" />
+
+						</div>
+						<div class="col-lg-3" id="mobile_prompt" style="color: red;"></div>
+					</div>
+					<!-- 住址 -->
+					<div class="form-group">
+						<label class="control-label col-lg-2">住址：</label>
+						<div class="col-lg-7">
+							<input type="text" class="form-control" value="" placeholder="请输入住址" th:field="*{address}" id="profession"
+							 th:onblur="checkPro()" />
+						</div>
+						<div class="col-lg-3" id="span_profession" style="color: red;"></div>
+					</div>
+					<div class="form-group">
+						<div class="col-lg-2"></div>
+						<div class="col-lg-1">
+							<a class="btn btn-success" th:href="@{/index}" role="button" type="text">返回首页</a>
+						</div>
+						<div class="col-lg-5"></div>
+						<div class="col-lg-1">
+
+							<a href="">
+								<button type="submit" class="btn btn-primary ">注册</button>
+							</a>
+						</div>
+					</div>
+				</form>
+
+				
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+					//提交表单进行验证
+					function go() {
+						var form = document.getElementById("myfrom");
+						var mydiv = document.getElementById("nameDiv");
+						if (!checkUser() || !checkPwd() || !checkrePwd() ||
+							!checkPro() || !checkDate() || !checkEmail() || !checkMobile() ||!checkHidden()) {
+							alert("注册失败请检查后重试");
+							return false;
+						}
+						alert("注册成功即将跳转登录页面");
+						return true;
+					};
+					// 创建异步对象
+					function createXMLHttpRequest() {
+						try {
+							return new XMLHttpRequest();
+						} catch (e) {
+							try {
+								return ActiveXObject("Msxml2.0.XMLHttp");
+							} catch (e) {
+								try {
+									return ActiveXObject("Microsoft.XMLHTTP");
+								} catch (e) {
+									throw e;
+								}
+							}
+						}
+					};
+					var myHiddenInput = document.getElementById("myHiddenInput");
+
+					window.onload = function() {
+						var username = document.getElementById("name");
+                        var token = $("meta[name='_csrf']").attr("content");
+                        var header = $("meta[name='_csrf_header']").attr("content");
+						username.onblur = function() {
+							// 得到异步对象
+							var XMLHTTP = createXMLHttpRequest();
+							// 打开连接
+							XMLHTTP.open("POST", "/checkRepeatName", true);
+							// 设置请求头
+							XMLHTTP.setRequestHeader(header,token);
+							XMLHTTP.setRequestHeader("Content-Type",
+							"application/x-www-form-urlencoded");
+							// 发送请求,给出请求体
+							XMLHTTP.send("username=" + username.value);
+							// 给XMLHTTP的onreadystatechange事件注册监听
+							XMLHTTP.onreadystatechange = function() {
+								if (XMLHTTP.readyState == 4 &&
+									XMLHTTP.status == 200) {
+									var text = XMLHTTP.responseText;
+									var mydiv = document.getElementById("nameDiv");
+									if (text == "1") {
+										///mydiv.innerHTML = "用户名已经被注册";
+                                        alert("用户名已经被注册请重新输入用户名");
+									} else {
+										//mydiv.innerHTML = "";
+										myHiddenInput.value = "true";
+									}
+								}
+							};
+						}
+					};
+
+					function checkHidden() {
+
+						if (myHiddenInput.value == "false") {
+							return false;
+						}
+						return true;
+					}
+					//绑定失去焦点事件
+					$("#name").blur(checkUser);
+					$("#pwd").blur(checkPwd);
+					$("#repwd").blur(checkrePwd);
+					//$("#sex").blur(checkSex);
+					$("#profession").blur(checkPro);
+					$("#datetimepicker1").blur(checkDate);
+					$("#email").blur(checkEmail);
+					$("#mobile").blur(checkMobile);
+					/*用户名验证用户名要在2-15位之间包含2,15*/
+					function checkUser() {
+						var user = $("#name").val();
+						var userId = $("#nameDiv");
+						userId.html("");
+						var reg = /^[\u4e00-\u9fa5_a-zA-Z0-9]{2,15}$/;
+						if (user == "") {
+							userId.html("用户名不能为空");
+							return false;
+						} else if (reg.test(user) == false) {
+							userId.html("用户名不合法");
+							return false;
+						}
+						return true;
+					};
+					/*密码验证*/
+					function checkPwd() {
+						var pwd = $("#pwd").val();
+						var pwdId = $("#span_pwd");
+						var reg = /^[a-zA-Z0-9]{4,16}$/;
+						pwdId.html("");
+						if (pwd == "") {
+							pwdId.html("密码不能为空");
+							return false;
+						} else if (reg.test(pwd) == false) {
+							pwdId.html("密码不能含有非法字符，长度在4-16之间");
+							return false;
+						}
+						return true;
+					};
+					//确认密码
+					function checkrePwd() {
+						var repwd = $("#repwd").val();
+						var pwd = $("#pwd").val();
+						var repwdId = $("#span_repwd");
+						repwdId.html("");
+						if (repwd != pwd) {
+							repwdId.html("两次输入的密码不一致");
+							return false;
+						}
+						return true;
+					};
+					// 检查生日
+					function checkDate() {
+						var date = $("#datetimepicker1").val();
+						var dateId = $("#span_date");
+						dateId.html("");
+						if (date == "") {
+							dateId.html("选择的生日不能为空");
+							return false;
+						}
+						return true;
+					};
+					/*验证邮箱*/
+					function checkEmail() {
+						var email = $("#email").val();
+						var email_prompt = $("#email_prompt");
+						email_prompt.html("");
+						var reg = /^\w+@\w+(\.[a-zA-Z]{2,3}){1,2}$/;
+						if (reg.test(email) == false) {
+							email_prompt.html("Email格式不正确，例如web@sohu.com");
+							return false;
+						}
+						return true;
+					}
+					/*验证手机号码*/
+					function checkMobile() {
+						var mobile = $("#mobile").val();
+						var mobileId = $("#mobile_prompt");
+						mobileId.html("");
+						var regMobile = /^1\d{10}$/;
+						if (regMobile.test(mobile) == false) {
+							mobileId.html("手机号码不正确，请重新输入");
+							return false;
+						}
+						mobileId.html("");
+						return true;
+					}
+					// 检查职业
+					function checkPro() {
+						var pro = $("#profession").val();
+						var proId = $("#span_profession");
+						proId.html("");
+						if (pro == "") {
+							proId.html("输入的住址不能为空");
+							return false;
+						}
+						return true;
+					}
+					$(function() {
+						$('#datetimepicker1').datetimepicker({
+							format: 'yyyy-mm--dd',
+							language: "zh-CN",
+							startView: "year", //初始化视图是‘年’
+							minView: "month", //最精确视图为'月'
+							maxView: "decade", //最高视图为'十年'
+							pickerPosition: "bottom-left",
+							autoclose: true
+						});
+					});
+					
+					function loginout(){
+						if(confirm("确定要退出登录吗")){
+							document.getElementById("loginout").submit();
+						}
+
+					}
+					
+				</script>
+	</body>
+</html>

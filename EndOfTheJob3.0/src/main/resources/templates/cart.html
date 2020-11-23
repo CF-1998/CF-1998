@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<title>购物车页面</title>
+</head>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="../static/css/bootstrap.min.css"/>
+ <link rel="stylesheet" th:href="@{/css/bootstrap-shouye.css}" href="../static/css/bootstrap-shouye.css"/>
+<link rel="stylesheet" th:href="@{/css/common.css}"	href="../static/css/common.css" />
+<link rel="stylesheet" th:href="@{/css/cart.css}" href="../static/css/cart.css" />
+
+
+<body>
+<!-- 顶部导航 -->
+	<div th:replace="inner::navbar"></div>
+<div class="shopping-car-container">
+	<div class="car-headers-menu">
+		<div class="row">
+			<div class="col-md-1 car-menu">
+				<label><input type="checkbox" id="check-goods-all" /><span id="checkAll">全选</span></label>
+			</div>
+			<div class="col-md-3 car-menu">商品信息</div>
+			<div class="col-md-3 car-menu">商品参数</div>
+			<div class="col-md-1 car-menu">单价</div>
+			<div class="col-md-1 car-menu">数量</div>
+			<div class="col-md-1 car-menu">金额</div>
+			<div class="col-md-2 car-menu">操作</div>
+		</div>
+	</div>
+	<form id="cartForm" method="post" th:action="@{/shopcart/checkout}">
+	<input type="hidden" id="checkedProductCount" name="checkedProductCount" value=""/>
+	<div class="goods-content">
+		<!--goods display-->
+		<div class="goods-item" th:each="item : ${shopCartList}">
+			<div class="panel panel-default">
+				<div class="panel-body cart-body">
+					<div class="col-md-1 car-goods-info"><label><input type="checkbox" name="checkedProducts" class="goods-list-item" th:value="${item.product.pid}"></label>
+					</div>
+					<div class="col-md-3 car-goods-info goods-image-column">
+						<img class="goods-image" th:src="@{'/img/'+${item.product.smallImage}}" style="width: 100px; height: 100px;"><span id="goods-info" th:text="${item.product.name}">号地块健身房回复的科技示范户快速坚实的看了看大家发快递了很费劲的开始放假</span>
+					</div>
+					<div class="col-md-3 car-goods-info goods-params" th:text="${item.product.description}">四季度后付款的酸辣粉</div>
+					<div class="col-md-1 car-goods-info goods-price"><span>￥</span><span class="single-price" th:text="${item.product.sellPrice}">299</span></div>
+					<div class="col-md-1 car-goods-info goods-counts"><div class="input-group"><div class="input-group-btn"><button type="button" class="btn btn-default car-decrease">-</button></div><input type="text" name="productcount" class="form-control goods-count" th:value="${item.number}"><div class="input-group-btn"><button type="button" class="btn btn-default car-add">+</button></div></div></div>
+					<div class="col-md-1 car-goods-info goods-money-count"><span>￥</span><span class="single-total" th:text="${item.product.sellPrice*item.number}">598</span></div>
+					<div class="col-md-2 car-goods-info goods-operate"><button type="button" class="btn btn-danger item-delete" th:onclick="'preDelete('+${item.product.pid}+')'" >删除</button></div>
+			
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-body bottom-menu-include">
+			<div class="col-md-1 check-all-bottom bottom-menu">
+				<label>
+						<input type="checkbox" id="checked-all-bottom" />
+						<span id="checkAllBottom">全选</span>
+				</label>
+			</div>
+			<div class="col-md-1 bottom-menu ">
+				<span id="deleteMulty">
+						删除
+				</span>
+			</div>
+			<div class="col-md-6 bottom-menu">
+
+			</div>
+			<div class="col-md-2 bottom-menu">
+				<span>已选商品 <span id="selectGoodsCount">0</span> 件</span>
+			</div>
+			<div class="col-md-1 bottom-menu">
+				<span>合计：<span id="selectGoodsMoney">0.00</span></span>
+			</div>
+			<div class="col-md-1 bottom-menu submitData submitDis" th:onclick="toCheck()" >
+				结算
+			</div>
+		</div>
+	</div>
+		</form>
+	<!--删除确认弹框-->
+	<div class="modal fade" tabindex="-1" role="dialog" id="deleteItemTip" aria-labelledby="gridSystemModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="gridSystemModalLabel">提示</h4>
+				</div>
+				<div class="modal-body">
+					确认删除此商品？
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary deleteSure" th:onclick="toDelete()">确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--是否勾选商品提示-->
+	<div class="modal fade" tabindex="-1" role="dialog" id="selectItemTip" aria-labelledby="gridSystemModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="gridSystemModalLabel">提示</h4>
+				</div>
+				<div class="modal-body">
+					请选择要删除的商品！
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--批量删除商品-->
+	<div class="modal fade" tabindex="-1" role="dialog" id="deleteMultyTip" aria-labelledby="gridSystemModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="gridSystemModalLabel">提示</h4>
+				</div>
+				<div class="modal-body">
+					确认删除选择的商品！
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary deleteMultySure" th:onclick="toDeleteMore()" >确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- footer -->
+<footer th:replace="inner::footer">
+</footer>
+<script type="text/javascript" th:src="@{/js/cartscript.js}" src="../static/js/cartscript.js"></script>
+<script>
+	var pid;
+	function preDelete(id){
+		pid=id;
+	}
+	//删除某个商品
+	function toDelete(){
+		$.ajax({
+			url:"/user/deleteCart",
+			data: {pid: pid},
+			success:function(result){
+				console.log(result);
+			}
+	    }); 
+	}
+	//批量删除
+	function toDeleteMore(){
+		var arr = new Array();
+		$("input:checkbox[name='checkedProducts']:checked").each(function(i){
+			arr[i] = $(this).val();
+		});
+		//var vals = arr.join(",");
+		console.log(arr);
+		$.ajax({
+			url:"/user/deleteMoreCart",
+			data:{ pids:JSON.stringify(arr)},
+			success:function(result){
+				console.log(result);
+			}
+	    }); 
+	}
+	
+	 function toCheck(){
+	    	var array = new Array();
+			$("input:checkbox[name='checkedProducts']:checked").each(function(i){
+				array[i] = $(this).parents(".cart-body").find("input.goods-count").val();
+			});
+			var counts = array.join(",");
+			$("#checkedProductCount").val(counts);
+			$("#cartForm").submit();
+	} 
+	//ajax请求后跳转结算页面
+/* 	function toCheckout(){
+		var arr = new Array();
+		$("input:checkbox[name='checkedProducts']:checked").each(function(i){
+			arr[i] = $(this).val();
+		});
+		//var vals = arr.join(",");
+		console.log(arr);
+		$.ajax({
+			url:"/order/checkMess",
+			data:{ pids:JSON.stringify(arr)},
+			success:function(result){
+				console.log(result);
+				window.location.href = '/order/check';
+			}
+	    }); 
+	}  */
+</script>
+</body>
+</html>

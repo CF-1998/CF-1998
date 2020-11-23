@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="comments"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+     <style>
+      #myComments {
+				background-color: #f7f1ed;
+			}
+
+			.response {
+				line-height: 20px;
+			}
+			.comment-form{
+				    position: relative;
+				    margin: 0 0 40px;
+				    padding: 10px 20px;
+				    border-radius: 3px;
+				    background: #fff;
+					height: 160px;
+				    box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+			}
+			.comment-form textarea{
+				height: 140px;
+			}
+			.submit{
+				position: absolute;
+				right: 36px;
+				bottom: 26px;
+			}
+			.comment-view{
+				background-color: white;
+				margin-bottom: 36px;
+			}
+			li,ol{
+				list-style: none;
+				padding: 0;
+			}
+			#comment-header{
+				height: 60px;
+				line-height: 60px;
+			}
+			#comment-header img{
+				margin-left: 20px;
+				height: 50px;
+				width: 50px;
+				border-radius: 20px;
+			}
+			.comment-author{
+				margin-left: 20px;
+				color:black;
+			}
+			.comment-content{
+				margin: 10px;
+			}
+			.comment-meta{
+				margin: 10px;
+			}
+</style>
+<body>
+<div>
+    <div th:id="${book.id ?: 0}" class="comment-container">
+        <div id="comments" class="clearfix">
+            <div>
+            <form name="logoutform" th:action="@{/mylogout}" method="post"></form>
+                <span class="response">
+                    <th:block sec:authorize="isAuthenticated()">
+                        Hello，<a data-no-instant="" sec:authentication="name"></a>
+                        如果你想 <a href="javascript:document.logoutform.submit();">注销</a> ?
+                    </th:block>
+                    <th:block sec:authorize="isAnonymous()">
+                        用户想要评论，请先<a th:href="@{/login}" title="登录" data-no-instant="">登录</a>!
+                    </th:block>
+                </span>
+                <div sec:authorize="isAuthenticated()">
+                    <form id="comment-form" class="comment-form" role="form" onsubmit="return TaleComment.subComment();">
+                        <input type="hidden" name="id" id="id" th:value="${book.id}"/>
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <textarea name="text" id="textarea" class="form-control" placeholder="以上信息可以为空,评论不能为空哦!"
+                                  required="required" minlength="5" maxlength="2000"></textarea>
+                        <button type="submit" class="submit btn-success" id="misubmit">提交</button>
+                    </form>
+                </div>
+            </div>
+            <!-- 分页显示其他评论内容 -->
+            <div th:if="${book.comments}">
+                <ol class="comment-list">
+                    <th:block th:each="comment :${book.comments}">
+                        <li th:id="'li-comment-'+${book.id}" class="comment-body comment-parent comment-odd">
+                            <div th:id="'comment-'+${comment.id}">
+                                <div class="comment-view" onclick="">
+                                    <div id="comment-header">
+                                        <!--设置人物头像和名称-->
+                                        <img th:src="@{/img/me.png}" alt="user-img" />
+                                        <a class="comment-author" rel="external nofollow" th:text="'评论用户：'+${comment.author}" />
+                                    </div>
+                                    <!-- 评论内容 -->
+                                    <div class="comment-content">
+                                        <span class="comment-author-at"></span>
+                                        <p th:utext="'评论内容：'+${comment.content}"></p>
+                                    </div>
+                                    <!-- 评论日期 -->
+                                    <div class="comment-meta">
+                                        <time class="comment-time" th:text="'评论日期：'+${comment.created}"></time>
+                                        <!-- <a sec:authorize="isAuthenticated()" th:if="${comment.author}!= ${session.SPRING_SECURITY_CONTEXT.authentication.principal.username}" href="javascript:alert('该功能未实现！')" style="color: #1b961b">
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;回复
+                                        </a> -->
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </th:block>
+                </ol>
+               <!-- 进行评论分页 -->
+                
+				<!-- 111 -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    (function () {
+        window.TaleComment = {
+            subComment: function () {     
+                    $.ajax({
+                    type: 'post',
+                    url: '/comments/publish',
+                    data: $('#comment-form').serialize(),
+                    async: false,
+                    dataType: 'json',					
+                    success: function (result) {
+                    	console.log(result&&result.success);
+                        if (result&&result.success) {
+                        	console.log(result);
+                            window.alert("评论提交成功!");
+                            window.location.reload();
+                        } else {
+                            window.alert("发送失败")
+                            console.log(result);
+                            if (result.msg) {
+                                alert(result.msg);
+                            }
+                        }
+                    }
+                });
+                return false;
+            }
+        };
+    })();
+</script>
+</body>
+</html>

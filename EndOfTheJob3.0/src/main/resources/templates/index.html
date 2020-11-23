@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="UTF-8">
+<title>网上书城首页</title>
+<link rel="stylesheet" type="text/css"
+	th:href="@{/css/bootstrap.min.css}" />
+<script type="text/javascript" th:src="@{/js/jquery-1.11.1.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+<style type="text/css">
+#myBody {
+	background-color: #f7f1ed;
+}
+
+/* 轮播图 */
+.carousel {
+	margin-top: 55px;
+	height: 276px;
+	background-color: #000;
+	margin-bottom: 60px;
+}
+
+.carousel .item {
+	height: 276px;
+	background-color: #000;
+}
+
+.carousel img {
+	width: 100%;
+}
+
+#myCon {
+	display: flex;
+}
+
+#myCon div {
+	width: 20%;
+	height: 60px;
+}
+
+#myCon div img {
+	height: 60px;
+}
+
+/* 资讯与公告 */
+#myInformation {
+	margin-top: 20px;
+	height: 280px;
+}
+
+#myInformation li {
+	text-indent: 2em;
+}
+
+.myPanel {
+	background-color: #f7f1ed;
+}
+
+.myPanel .panel-heading {
+	background-color: #f7f1ed;
+}
+
+.list-group-item {
+	background-color: #f7f1ed;
+}
+
+/* 图书推荐 */
+#newBook .thumbnail {
+	margin: 5px 0;
+	height: 320px;
+}
+
+.myLable a {
+	color: #000000;
+	text-decoration: none;
+}
+
+.myLable p {
+	text-indent: 2em;
+	font-size: 16px;
+}
+
+#newBook-div {
+	margin-right: 88px;
+}
+
+.my-newBook-cover {
+	float: left;
+}
+
+.my-newBook-cover img {
+	width: 140px;
+	height: 180px;
+	transform: translateY(-60px);
+}
+
+#classicalBook .thumbnail {
+	margin: 5px 0;
+	height: 290px;
+	background-color: #f7f1ed;
+}
+
+.my-classicalBook-cover {
+	height: 290px;
+	float: left;
+}
+
+.my-classicalBook-cover img {
+	width: 200px;
+	height: 280px;
+}
+
+#classicalBook .thumbnail .caption {
+	margin-left: 210px;
+}
+
+#recommend .thumbnail {
+	margin: 5px 0;
+	height: 436px;
+	background-color: #f7f1ed;
+}
+
+#recommend .thumbnail img {
+	width: 195px;
+	height: 245px;
+}
+</style>
+</head>
+<body>
+	<div id="myBody">
+
+		<!-- 顶部导航 -->
+		<nav class="navbar navbar-default navbar-fixed-top navbar-inverse"
+			id="myNav">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed"
+						data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+						aria-expanded="false">
+						<span class="sr-only">Toggle navigation</span> <span
+							class="icon-bar"></span> <span class="icon-bar"></span> <span
+							class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" th:href="@{/index}">网上书城</a>
+				</div>
+
+				<div class="collapse navbar-collapse"
+					id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li class="active"><a href="#">网站综述 <span class="sr-only">(current)</span></a></li>
+						<li><a href="#">简述</a></li>
+						<li class="dropdown"><a href="#" class="dropdown-toggle"
+							data-toggle="dropdown" role="button" aria-haspopup="true"
+							aria-expanded="false">图书分类</a>
+							<ul class="dropdown-menu" >
+								<li th:each="kindOfBooks:${kindOfBooks}"><a href="#" th:text="${kindOfBooks.bookKind}">Action</a></li>
+
+							</ul></li>
+						<li><a href="#">客服中心</a></li>
+					</ul>
+					<form class="navbar-form navbar-left">
+						<div class="form-group">
+							<input type="text" class="form-control" placeholder="搜索藏品">
+						</div>
+						<button type="submit" class="btn btn-default">搜索</button>
+					</form>
+					<ul class="nav navbar-nav navbar-right">
+						<li><a th:href="@{/register}" style="color: gold;"><span
+								class="glyphicon glyphicon-flash">注册</span></a></li>
+						<li sec:authorize="isAnonymous()"><a th:href="@{/login}"
+							style="color: gold;"><span class="glyphicon glyphicon-user">登录</span></a></li>
+						<li sec:authorize="isAuthenticated()"><a
+							th:href="'javascript:loginout();'" style="color: gold;"><span
+								class="glyphicon glyphicon-remove" sec:authentication="name"></span>安全退出</a></li>
+						<li sec:authorize="hasRole('common')"><a th:href="@{/goshop}" style="color: gold;"><span
+								class="glyphicon glyphicon-shopping-cart"
+								>购物车</span></a></li>
+						<li sec:authorize="hasRole('admin')"><a th:href="@{/admin}" style="color: gold;"><span
+								class="glyphicon glyphicon-home"
+								>后台管理</span></a></li>
+					</ul>
+
+					<form th:action="@{/mylogout}" method="post"
+						style="display: 'none';" id="loginout"></form>
+				</div>
+			</div>
+		</nav>
+
+		<!-- 顶部轮播图 -->
+		<div class="container">
+			<div id="carousel-example-generic" class="carousel slide"
+				data-ride="carousel">
+				<div class="carousel-inner" role="listbox">
+					<!-- 1 -->
+					<div class="item active" th:each="carousels:${carousels}"
+						th:if="${carousels.id eq 1}">
+						<img th:src="@{'/img/'+${carousels.carouselImg}}" alt="..."
+							class="carousel-img">
+					</div>
+					<!-- 2 -->
+					<div class="item" th:each="carousels:${carousels}"
+						th:unless="${carousels.id eq 1}">
+						<img th:src="@{'/img/'+${carousels.carouselImg}}" alt="...">
+						<div class="carousel-caption"></div>
+					</div>
+
+				</div>
+				<div id="myCon">
+					<div data-target="#carousel-example-generic"
+						th:data-slide-to="${carousels.id}-1"
+						th:each="carousels:${carousels}">
+						<img th:src="@{'/img/'+${carousels.carouselImgControl}}">
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<!-- 资讯与公告 -->
+		<div class="container" id="myInformation">
+			<div class="row">
+				<div class="col-lg-7">
+					<div class="panel panel-default myPanel">
+						<div class="panel-heading">
+							<h3 class="panel-title">资讯</h3>
+						</div>
+						<div class="panel-body">
+							<ul class="list-group">
+								<li class="list-group-item">我们必须想象，西西福斯是幸福的。
+									自出版近40年以来，几乎没有任何作品比雷蒙德·卡佛的
+									《当我们谈论爱情时我们在谈论什么》受到更多来自作家和读者的致敬。这部风格冷峻、情节
+									精炼的作品给彼时颇受滞碍的美国文坛带来了前所未有的活力，让卡佛成为无可争议的“极简主义文学之父”，收获无数粉丝。</li>
+								<li class="list-group-item">2004年，一部并不具备流行文学特质的小说《狼图腾》，一经出版却奇迹般席卷文坛，
+									不仅创下中国地区超500万册的傲人销量，引发社会讨论热潮，更被翻译为37种语言，在全球110个国家和地区发行，成为
+									一部成功走向世界的中国文学作品。</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-4 col-lg-offset-1">
+					<div class="panel panel-default myPanel">
+						<div class="panel-heading">
+							<h3 class="panel-title">公告</h3>
+						</div>
+						<div class="panel-body">
+							<table class="table table-hover">
+
+								<tr>
+									<td><b>欢迎来到凯丰书城</b></td>
+								</tr>
+								<tr>
+									<td>成为其他人。在凯丰书城挑选你的英雄。</td>
+								</tr>
+								<tr>
+									<td>超多精彩图书等你来购，更有意想不到的优惠哦！</td>
+								</tr>
+								<tr>
+									<td>逃进书中，远离城市的喧嚣，享受安谧吧。</td>
+								</tr>
+								<tr>
+									<td>更多问题请联系672235206@qq.com</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 图书推荐标签页 -->
+		<div class="container myLable">
+			<div class="page-header">
+				<h1>图书推荐专区</h1>
+			</div>
+			<ul class="nav nav-tabs" role="tablist" id="myTabs">
+				<li role="presentation" class="active"><a href="#newBook">新书上架</a></li>
+				<li role="presentation"><a href="#classicalBook">经典畅销</a></li>
+				<li role="presentation"><a href="#recommend">今日特惠</a></li>
+			</ul>
+			<div class="tab-content">
+				<div role="tabpanel" class="tab-pane active" id="newBook">
+					<!-- 1 -->
+					<div class="row">
+						<div class="col-lg-5"
+							th:each="booksOfBookCreateDate:${booksOfBookCreateDate}"
+							id="newBook-div">
+							<div class="thumbnail">
+								<img th:src="@{'/img/'+${booksOfBookCreateDate.bookPlaybill}}"
+									alt="...">
+								<div class="caption">
+									<div class="my-newBook-cover">
+										<img th:src="@{'/img/'+${booksOfBookCreateDate.bookCover}}">
+									</div>
+									<h4 th:text="${booksOfBookCreateDate.bookName}"></h4>
+									<a th:href="@{|/details/${booksOfBookCreateDate.id}|}">
+										<p th:text="${booksOfBookCreateDate.bookTitle} + '点我查看详情...'">一本陪伴弗兰特所有作品的作品。</p>
+									</a>
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+
+				</div>
+				<div role="tabpanel" class="tab-pane" id="classicalBook">
+					<!-- 1 -->
+					<div class="row">
+						<div class="col-lg-6"
+							th:each="booksOfBookSalesVolume:${booksOfBookSalesVolume}">
+							<div class="thumbnail">
+								<div class="my-classicalBook-cover">
+									<img th:src="@{'/img/'+${booksOfBookSalesVolume.bookCover}}"
+										alt="...">
+								</div>
+								<div class="caption">
+									<h3 th:text="${booksOfBookSalesVolume.bookName}"></h3>
+									<p th:text="'作者'+${booksOfBookSalesVolume.bookAuthor}"></p>
+									<p th:text="${booksOfBookSalesVolume.bookPublisher}"></p>
+									<p th:text="'出版时间'+${booksOfBookSalesVolume.bookCreateDate}"></p>
+									<a th:href="@{|/details/${booksOfBookSalesVolume.id}|}">
+										<p th:text="${booksOfBookSalesVolume.bookTitle}+'点我查看详情...'  "></p>
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div role="tabpanel" class="tab-pane" id="recommend">
+					<!-- 1 -->
+					<div class="row">
+						<div class="col-lg-3"
+							th:each="booksOfBookDiscount:${booksOfBookDiscount}">
+							<div class="thumbnail">
+								<img th:src="@{'/img/'+${booksOfBookDiscount.bookCover}}"
+									alt="...">
+								<div class="caption">
+									<h3 th:text="${booksOfBookDiscount.bookName}">晚熟的人</h3>
+									<h4 th:text="'作者：'+${booksOfBookDiscount.bookAuthor}"></h4>
+									<a th:href="@{|/details/${booksOfBookDiscount.id}|}">
+										<p th:text="${booksOfBookDiscount.bookTitle}+'点我查看详情...'  "></p>
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<script type="text/javascript">
+		$('#myTabs a').mouseenter(function(e) {
+			e.preventDefault()
+			$(this).tab('show')
+		})
+		function loginout(){
+			if(confirm("确定要退出登录吗")){
+				document.getElementById("loginout").submit();
+			}
+	
+		}
+	</script>
+</body>
+</html>
